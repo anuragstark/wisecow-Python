@@ -74,4 +74,8 @@ You do **not** need to run any local scripts.
 
 ---
 
-> **Note to Reviewers:** Please see `PROJECT_CHANGELOG.md` and `INTERVIEW_PREP.md` for a deeper dive into the architecture decisions, AWS networking logic, and Kubernetes scaling mechanisms implemented in this project.
+## Let's Connect!
+**Anurag Stark**
+
+Feel free to reach out or connect with me on LinkedIn:
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://www.linkedin.com/in/anuragstark/)

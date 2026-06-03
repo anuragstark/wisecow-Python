@@ -8,12 +8,12 @@ echo "Starting Wisecow Cluster Bootstrap..."
 # 1. Install ArgoCD
 echo "Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --server-side
 
 # 2. Install Argo Rollouts Controller
 echo "Installing Argo Rollouts Controller..."
 kubectl create namespace argo-rollouts --dry-run=client -o yaml | kubectl apply -f -
-kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml
+kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml --server-side
 
 # 3. Wait for ArgoCD and Rollouts to be ready
 echo "Waiting for controllers to start (this may take a minute)..."
