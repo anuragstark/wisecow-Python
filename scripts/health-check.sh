@@ -20,10 +20,10 @@ echo -e "${GREEN}=== Wisecow Health Check ===${NC}"
 # Function to check if a command succeeded
 check_status() {
     if [ $? -eq 0 ]; then
-        echo -e "${GREEN}✓ $1${NC}"
+        echo -e "${GREEN}[OK] $1${NC}"
         return 0
     else
-        echo -e "${RED}✗ $1${NC}"
+        echo -e "${RED}[FAIL] $1${NC}"
         return 1
     fi
 }
@@ -48,9 +48,9 @@ READY_REPLICAS=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o jsonpat
 DESIRED_REPLICAS=$(kubectl get deployment "$DEPLOYMENT" -n "$NAMESPACE" -o jsonpath='{.spec.replicas}')
 
 if [ "$READY_REPLICAS" = "$DESIRED_REPLICAS" ]; then
-    echo -e "${GREEN}✓ Deployment is ready ($READY_REPLICAS/$DESIRED_REPLICAS replicas)${NC}"
+    echo -e "${GREEN}[OK] Deployment is ready ($READY_REPLICAS/$DESIRED_REPLICAS replicas)${NC}"
 else
-    echo -e "${RED}✗ Deployment not ready ($READY_REPLICAS/$DESIRED_REPLICAS replicas)${NC}"
+    echo -e "${RED}[FAIL] Deployment not ready ($READY_REPLICAS/$DESIRED_REPLICAS replicas)${NC}"
 fi
 
 # Check pod status
@@ -59,9 +59,9 @@ RUNNING_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=wisecow --field-selector=
 TOTAL_PODS=$(kubectl get pods -n "$NAMESPACE" -l app=wisecow -o name | wc -l)
 
 if [ "$RUNNING_PODS" -eq "$TOTAL_PODS" ] && [ "$TOTAL_PODS" -gt 0 ]; then
-    echo -e "${GREEN}✓ All pods are running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
+    echo -e "${GREEN}[OK] All pods are running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
 else
-    echo -e "${RED}✗ Some pods are not running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
+    echo -e "${RED}[FAIL] Some pods are not running ($RUNNING_PODS/$TOTAL_PODS)${NC}"
     echo -e "${YELLOW}Pod details:${NC}"
     kubectl get pods -n "$NAMESPACE" -l app=wisecow
 fi
@@ -86,12 +86,12 @@ echo -e "${YELLOW}Checking TLS certificate...${NC}"
 if kubectl get certificates -n "$NAMESPACE" &>/dev/null; then
     CERT_READY=$(kubectl get certificates -n "$NAMESPACE" -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}')
     if [ "$CERT_READY" = "True" ]; then
-        echo -e "${GREEN}✓ TLS certificate is ready${NC}"
+        echo -e "${GREEN}[OK] TLS certificate is ready${NC}"
     else
-        echo -e "${YELLOW}⚠ TLS certificate not ready yet${NC}"
+        echo -e "${YELLOW}[WARN] TLS certificate not ready yet${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ No TLS certificates found${NC}"
+    echo -e "${YELLOW}[WARN] No TLS certificates found${NC}"
 fi
 
 # Test application endpoint (if LoadBalancer is ready)
@@ -100,21 +100,21 @@ LB_URL=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='
 
 if [ -n "$LB_URL" ]; then
     if curl -s -o /dev/null -w "%{http_code}" "http://$LB_URL" | grep -q "200\|302\|301"; then
-        echo -e "${GREEN}✓ Application endpoint is responding${NC}"
+        echo -e "${GREEN}[OK] Application endpoint is responding${NC}"
     else
-        echo -e "${RED}✗ Application endpoint not responding${NC}"
+        echo -e "${RED}[FAIL] Application endpoint not responding${NC}"
     fi
 else
-    echo -e "${YELLOW}⚠ LoadBalancer URL not available${NC}"
+    echo -e "${YELLOW}[WARN] LoadBalancer URL not available${NC}"
 fi
 
 # Check resource usage
 echo -e "${YELLOW}Checking resource usage...${NC}"
 if kubectl top pods -n "$NAMESPACE" &>/dev/null; then
-    echo -e "${GREEN}✓ Resource metrics available${NC}"
+    echo -e "${GREEN}[OK] Resource metrics available${NC}"
     kubectl top pods -n "$NAMESPACE"
 else
-    echo -e "${YELLOW}⚠ Resource metrics not available (metrics server may not be installed)${NC}"
+    echo -e "${YELLOW}[WARN] Resource metrics not available (metrics server may not be installed)${NC}"
 fi
 
 # Summary

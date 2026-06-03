@@ -43,6 +43,7 @@ def cow():
     <html>
     <head>
         <title>Wisecow</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <style>
             body {{
                 background-color: #1e1e1e;
@@ -52,11 +53,22 @@ def cow():
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: 100vh;
+                min-height: 100vh;
                 margin: 0;
+                box-sizing: border-box;
             }}
             pre {{
                 font-size: 1.2rem;
+                max-width: 100%;
+                overflow-x: auto;
+            }}
+            @media (max-width: 768px) {{
+                pre {{
+                    font-size: 0.8rem;
+                }}
+                body {{
+                    padding: 1rem;
+                }}
             }}
         </style>
     </head>

@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/YOUR_ORG/wisecow.git' # Replace with actual repository URL
+    repoURL: 'https://github.com/anuragstark/wisecow-Python.git'
     targetRevision: HEAD
     path: helm/wisecow
   destination:

@@ -75,9 +75,9 @@ READY_PODS=$(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[?(@.status.ph
 TOTAL_PODS=$(kubectl get pods -n "$NAMESPACE" -o jsonpath='{.items[*].metadata.name}' | wc -w)
 
 if [ "$READY_PODS" -eq "$TOTAL_PODS" ] && [ "$TOTAL_PODS" -gt 0 ]; then
-    echo -e "${GREEN}✓ All pods are running ($READY_PODS/$TOTAL_PODS)${NC}"
+    echo -e "${GREEN}[OK] All pods are running ($READY_PODS/$TOTAL_PODS)${NC}"
 else
-    echo -e "${RED}✗ Some pods are not running ($READY_PODS/$TOTAL_PODS)${NC}"
+    echo -e "${RED}[FAIL] Some pods are not running ($READY_PODS/$TOTAL_PODS)${NC}"
 fi
 
 echo -e "${GREEN}=== Monitoring Complete ===${NC}"

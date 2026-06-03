@@ -1,15 +1,15 @@
-# 🐮 Wisecow GitOps Platform
+# Wisecow GitOps Platform
 
 [![CI/CD Pipeline](https://github.com/anuragstark/wisecow-Python/actions/workflows/app-ci.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
 [![Infrastructure](https://github.com/anuragstark/wisecow-Python/actions/workflows/infra-deploy.yaml/badge.svg)](https://github.com/anuragstark/wisecow-Python/actions)
 
 An enterprise-grade, cloud-native DevOps portfolio project demonstrating a fully automated **Test -> Build -> Scan -> Deploy** lifecycle using **GitOps** principles.
 
-## 🌟 Architecture Overview
+## Architecture Overview
 
 This project deploys a containerized **Python Flask Microservice** onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
 
-### 🏗️ Tech Stack
+### Tech Stack
 - **Application**: Python 3.11, Flask, Gunicorn (with Prometheus metrics)
 - **Infrastructure as Code**: Terraform (Modularized VPC & EKS with S3 Remote Backend)
 - **Containerization**: Docker, GitHub Container Registry (GHCR)
@@ -21,7 +21,7 @@ This project deploys a containerized **Python Flask Microservice** onto an **AWS
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 ### 1. DevSecOps CI/CD Pipeline (`app-ci.yaml`)
 On every push to the repository:
@@ -41,7 +41,7 @@ On every push to the repository:
 
 ---
 
-## 🛠️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - AWS Account
@@ -59,11 +59,10 @@ You do **not** need to run any local scripts.
 
 ---
 
-## 📂 Repository Structure
+## Repository Structure
 
 ```text
 ├── .github/workflows/       # GitHub Actions (app-ci, infra-deploy, infra-destroy)
-├── ansible/                 # Legacy Ansible playbooks for cluster setup
 ├── argocd/                  # GitOps Application manifests (Wisecow & Prometheus)
 ├── helm/wisecow/            # Helm chart containing the Argo Rollout template
 ├── scripts/                 # Utility scripts (bootstrap.sh)
