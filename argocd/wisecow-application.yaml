@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: wisecow
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: 'https://github.com/YOUR_ORG/wisecow.git' # Replace with actual repository URL
+    targetRevision: HEAD
+    path: helm/wisecow
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: wisecow
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

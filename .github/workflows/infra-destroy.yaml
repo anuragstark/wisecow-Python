@@ -1,0 +1,47 @@
+name: Infrastructure Destroy
+on:
+  workflow_dispatch: # ONLY manual trigger for safety
+
+jobs:
+  destroy-infra:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0"
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --region us-east-1 --name wisecow-cluster
+      continue-on-error: true # Might fail if cluster doesn't exist yet, which is fine
+      
+    - name: Clean up Kubernetes LoadBalancers
+      run: |
+        # If we don't delete Ingress controllers first, their AWS LoadBalancers 
+        # will prevent Terraform from cleanly destroying the VPC.
+        echo "Deleting ArgoCD and Prometheus to release LoadBalancers..."
+        kubectl delete namespace argocd --ignore-not-found=true
+        kubectl delete namespace monitoring --ignore-not-found=true
+        
+        # Wait a moment for AWS to delete the ELBs
+        sleep 30
+      continue-on-error: true # Ignore if they are already deleted
+      
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+      
+    - name: Terraform Destroy
+      working-directory: ./terraform
+      run: terraform destroy -auto-approve

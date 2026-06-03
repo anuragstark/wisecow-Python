@@ -1,0 +1,53 @@
+name: Infrastructure Deploy
+on:
+  workflow_dispatch: # Allow manual trigger
+  push:
+    branches: [ main ]
+    paths:
+      - 'terraform/**'
+      - 'scripts/bootstrap.sh'
+
+jobs:
+  deploy-infra:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: "1.5.0"
+        
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+        
+    - name: Terraform Init
+      working-directory: ./terraform
+      run: terraform init
+      
+    - name: Terraform Format
+      working-directory: ./terraform
+      run: terraform fmt -check
+      continue-on-error: true # Don't fail the build just for formatting
+      
+    - name: Terraform Plan
+      working-directory: ./terraform
+      run: terraform plan -out=tfplan
+      
+    - name: Terraform Apply
+      working-directory: ./terraform
+      run: terraform apply -auto-approve tfplan
+      
+    - name: Update kubeconfig
+      run: aws eks update-kubeconfig --region us-east-1 --name wisecow-cluster
+      
+    - name: Bootstrap Cluster (ArgoCD & GitOps)
+      run: |
+        chmod +x scripts/bootstrap.sh
+        ./scripts/bootstrap.sh

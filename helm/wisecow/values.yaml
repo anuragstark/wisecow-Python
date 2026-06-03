@@ -1,0 +1,53 @@
+replicaCount: 3
+
+image:
+  repository: ghcr.io/anuragstark/wisecow
+  pullPolicy: Always
+  tag: "latest"
+
+imagePullSecrets:
+  - name: ghcr-secret
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 4499
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+  hosts:
+    - host: www.checkmypro.online
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: wisecow-tls
+      hosts:
+        - www.checkmypro.online
+
+resources:
+  requests:
+    memory: "128Mi"
+    cpu: "250m"
+  limits:
+    memory: "256Mi"
+    cpu: "500m"
+
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  capabilities:
+    drop: ["ALL"]
+    
+podSecurityContext:
+  fsGroup: 2000
+
+networkPolicy:
+  enabled: true

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  wisecow:
+    build: .
+    ports:
+      - "4499:4499"
+    environment:
+      - PORT=4499
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4499/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+        reservations:
+          cpus: '0.25'
+          memory: 64M
