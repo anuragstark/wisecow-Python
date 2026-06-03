@@ -113,8 +113,8 @@ resource "aws_eks_node_group" "this" {
     min_size     = 1
   }
 
-  capacity_type  = "SPOT"
-  instance_types = ["t3.medium", "t3a.medium", "t2.medium"]
+  capacity_type  = "ON_DEMAND"
+  instance_types = ["t3.medium"]
 
   depends_on = [
     aws_iam_role_policy_attachment.worker_node_policy,
