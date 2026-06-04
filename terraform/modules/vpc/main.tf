@@ -3,6 +3,8 @@ data "aws_availability_zones" "available" {
 }
 
 resource "aws_vpc" "this" {
+  # checkov:skip=CKV2_AWS_11: "VPC Flow Logs are disabled to minimize AWS costs for this interview demonstration project."
+  # checkov:skip=CKV2_AWS_12: "Default security group is not used by EKS, so restricting it is low priority for this demo."
   cidr_block           = "10.0.0.0/16"
   enable_dns_hostnames = true
   enable_dns_support   = true
@@ -22,6 +24,7 @@ resource "aws_internet_gateway" "this" {
 }
 
 resource "aws_subnet" "public" {
+  # checkov:skip=CKV_AWS_130: "Public subnets require auto-assign public IP for EKS nodes to join the cluster without a NAT Gateway."
   count             = 2
   vpc_id            = aws_vpc.this.id
   cidr_block        = "10.0.${count.index + 1}.0/24"

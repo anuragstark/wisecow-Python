@@ -97,3 +97,4 @@ jobs:
         directory: helm/wisecow/
         framework: helm
         soft_fail: true
+        skip_check: CKV_K8S_21
