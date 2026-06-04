@@ -57,8 +57,10 @@ resource "aws_eks_cluster" "this" {
   role_arn = aws_iam_role.cluster_role.arn
 
   vpc_config {
-    subnet_ids         = var.subnet_ids
-    security_group_ids = [aws_security_group.eks_sg.id]
+    subnet_ids              = var.subnet_ids
+    security_group_ids      = [aws_security_group.eks_sg.id]
+    endpoint_private_access = true
+    endpoint_public_access  = true
   }
 
   depends_on = [
@@ -102,9 +104,9 @@ resource "aws_iam_role_policy_attachment" "container_registry_policy" {
 
 # EKS Node Group
 resource "aws_eks_node_group" "this" {
-  cluster_name    = aws_eks_cluster.this.name
-  node_group_name = "wisecow-nodes"
-  node_role_arn   = aws_iam_role.node_role.arn
+  cluster_name           = aws_eks_cluster.this.name
+  node_group_name_prefix = "wisecow-nodes-"
+  node_role_arn          = aws_iam_role.node_role.arn
   subnet_ids      = var.subnet_ids
 
   scaling_config {
