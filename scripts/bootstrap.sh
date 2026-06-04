@@ -15,7 +15,11 @@ echo "Installing Argo Rollouts Controller..."
 kubectl create namespace argo-rollouts --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/releases/latest/download/install.yaml --server-side --force-conflicts
 
-# 3. Install Ingress Nginx Controller
+# 3. Pre-install Prometheus ServiceMonitor CRD (required for NGINX metrics)
+echo "Pre-installing Prometheus ServiceMonitor CRD..."
+kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.74.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml --server-side || true
+
+# 4. Install Ingress Nginx Controller
 echo "Installing Ingress Nginx Controller..."
 helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx || true
 helm repo update
