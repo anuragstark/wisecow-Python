@@ -48,6 +48,8 @@ jobs:
       run: aws eks update-kubeconfig --region us-east-1 --name wisecow-cluster
       
     - name: Bootstrap Cluster (ArgoCD & GitOps)
+      env:
+        SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
       run: |
         chmod +x scripts/bootstrap.sh
         ./scripts/bootstrap.sh

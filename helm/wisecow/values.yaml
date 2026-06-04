@@ -27,10 +27,15 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
+    - host: www.checkmypro.online
+      paths:
+        - path: /
+          pathType: Prefix
   tls:
     - secretName: wisecow-tls
       hosts:
         - checkmypro.online
+        - www.checkmypro.online
 
 resources:
   requests:

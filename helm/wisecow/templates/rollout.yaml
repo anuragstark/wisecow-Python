@@ -10,7 +10,10 @@ spec:
     canary:
       steps:
       - setWeight: 20
-      - pause: {} # Pauses indefinitely until manually promoted, or you can add duration like `duration: 10m`
+      - pause: {duration: 2m}
+      - analysis:
+          templates:
+          - templateName: crash-loop-check
   selector:
     matchLabels:
       {{- include "wisecow.selectorLabels" . | nindent 6 }}

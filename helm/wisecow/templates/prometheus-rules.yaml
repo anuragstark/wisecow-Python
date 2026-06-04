@@ -1,0 +1,28 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: {{ include "wisecow.fullname" . }}-alerts
+  labels:
+    {{- include "wisecow.labels" . | nindent 4 }}
+    release: prometheus # Required for kube-prometheus-stack to pick it up
+spec:
+  groups:
+  - name: wisecow-alerts
+    rules:
+    - alert: WisecowHighCpuSpike
+      expr: sum(rate(container_cpu_usage_seconds_total{namespace="{{ .Release.Namespace }}", container="{{ .Chart.Name }}"}[2m])) / sum(kube_pod_container_resource_limits{namespace="{{ .Release.Namespace }}", container="{{ .Chart.Name }}", resource="cpu"}) > 0.70
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High CPU Usage Spike ({{`{{ $value | humanizePercentage }}`}})"
+        description: "Wisecow CPU usage is above 70% of its limit."
+
+    - alert: WisecowHighMemorySpike
+      expr: sum(container_memory_working_set_bytes{namespace="{{ .Release.Namespace }}", container="{{ .Chart.Name }}"}) / sum(kube_pod_container_resource_limits{namespace="{{ .Release.Namespace }}", container="{{ .Chart.Name }}", resource="memory"}) > 0.70
+      for: 2m
+      labels:
+        severity: critical
+      annotations:
+        summary: "High Memory Usage Spike ({{`{{ $value | humanizePercentage }}`}})"
+        description: "Wisecow Memory usage is above 70% of its limit."

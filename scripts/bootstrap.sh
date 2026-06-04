@@ -5,6 +5,19 @@ set -e
 
 echo "Starting Wisecow Cluster Bootstrap..."
 
+echo "Creating Monitoring Namespace..."
+kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+echo "Injecting SMTP Secret for Alertmanager..."
+if [ -n "$SMTP_APP_PASSWORD" ]; then
+  kubectl create secret generic alertmanager-smtp \
+    --namespace monitoring \
+    --from-literal=password="$SMTP_APP_PASSWORD" \
+    --dry-run=client -o yaml | kubectl apply -f -
+else
+  echo "[WARN] SMTP_APP_PASSWORD is not set. Email alerts will fail."
+fi
+
 # 1. Install ArgoCD
 echo "Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
@@ -18,6 +31,18 @@ kubectl apply -n argo-rollouts -f https://github.com/argoproj/argo-rollouts/rele
 # 3. Pre-install Prometheus ServiceMonitor CRD (required for NGINX metrics)
 echo "Pre-installing Prometheus ServiceMonitor CRD..."
 kubectl apply -f https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.74.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml --server-side || true
+
+# 3.5 Install Cert-Manager
+echo "Installing Cert-Manager..."
+helm repo add jetstack https://charts.jetstack.io || true
+helm repo update
+helm upgrade --install cert-manager jetstack/cert-manager \
+  --namespace cert-manager --create-namespace \
+  --set crds.enabled=true \
+  --wait
+
+echo "Creating Let's Encrypt ClusterIssuer..."
+kubectl apply -f argocd/cluster-issuer.yaml
 
 # 4. Install Ingress Nginx Controller
 echo "Installing Ingress Nginx Controller..."
@@ -59,11 +84,16 @@ done
 
 echo "=========================================================================="
 echo " SUCCESS! Your Load Balancer is ready."
+# Fetch ArgoCD password
+ARGOCD_PW=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" 2>/dev/null | base64 -d || echo "Not ready yet")
+
 echo "Add these THREE CNAME records in DNS pointing to this address:"
 echo "1. www.checkmypro.online"
 echo "2. argocd.checkmypro.online"
 echo "3. grafana.checkmypro.online"
 echo ""
 echo "    $LB_URL"
+echo ""
+echo "🔐 ArgoCD Admin Password: $ARGOCD_PW"
 echo ""
 echo "=========================================================================="

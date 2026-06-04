@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: crash-loop-check
+  labels:
+    {{- include "wisecow.labels" . | nindent 4 }}
+spec:
+  metrics:
+  - name: crash-check
+    interval: 30s
+    count: 4  # Run 4 times (total 2 minutes)
+    successCondition: result[0] == 0 # 0 Restarts allowed
+    provider:
+      prometheus:
+        address: http://kube-prometheus-stack-prometheus.monitoring.svc.cluster.local:9090
+        query: |
+          sum(kube_pod_container_status_restarts_total{namespace="{{ .Release.Namespace }}", container="{{ .Chart.Name }}"}) OR vector(0)

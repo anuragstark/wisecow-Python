@@ -12,6 +12,32 @@ spec:
     helm:
       releaseName: prometheus
       values: |
+        alertmanager:
+          config:
+            global:
+              smtp_smarthost: 'smtp.gmail.com:587'
+              smtp_from: 'alertmanager@checkmypro.online'
+              smtp_auth_username: 'anuragchauhan536@gmail.com'
+              smtp_auth_identity: 'anuragchauhan536@gmail.com'
+              smtp_auth_password_file: /etc/alertmanager/secrets/alertmanager-smtp/password
+            route:
+              group_by: ['alertname']
+              group_wait: 30s
+              group_interval: 5m
+              repeat_interval: 1h
+              receiver: 'email-notifications'
+              routes:
+                - matchers:
+                  - severity="critical"
+                  receiver: 'email-notifications'
+            receivers:
+            - name: 'email-notifications'
+              email_configs:
+              - to: 'anuragchauhan536@gmail.com'
+                send_resolved: true
+          alertmanagerSpec:
+            secrets:
+              - alertmanager-smtp
         grafana:
           adminUser: wisecow
           adminPassword: wisecow
