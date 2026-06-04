@@ -8,7 +8,8 @@ resource "aws_vpc" "this" {
   enable_dns_support   = true
 
   tags = {
-    Name = "wisecow-vpc"
+    Name                                    = "wisecow-vpc"
+    "kubernetes.io/cluster/wisecow-cluster" = "shared"
   }
 }
 
@@ -29,8 +30,9 @@ resource "aws_subnet" "public" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name                     = "wisecow-public-subnet-${count.index + 1}"
-    "kubernetes.io/role/elb" = "1"
+    Name                                    = "wisecow-public-subnet-${count.index + 1}"
+    "kubernetes.io/role/elb"                = "1"
+    "kubernetes.io/cluster/wisecow-cluster" = "shared"
   }
 }
 
