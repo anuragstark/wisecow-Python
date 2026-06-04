@@ -1,0 +1,4 @@
+# Accept risk for upstream Python base image vulnerabilities
+# These are present in the python:3.11-slim base image and leaving duplicate metadata files when upgraded via pip
+CVE-2026-23949
+CVE-2026-24049
