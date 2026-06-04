@@ -57,6 +57,31 @@ You do **not** need to run any local scripts.
 3. **Trigger App Update**: Make a change to `app.py`, commit, and push. Watch the `app-ci.yaml` action test, scan, and push your image.
 4. **Tear Down**: When finished, run the `Infrastructure Destroy` GitHub Action to safely clean up AWS resources.
 
+### Accessing Dashboards & Application
+
+Once the cluster is bootstrapped, an AWS Load Balancer is automatically provisioned via the NGINX Ingress Controller. To get your Load Balancer URL, check the end of the `bootstrap.sh` script output or run:
+```bash
+kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
+
+Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to the AWS Load Balancer URL:
+
+**1. Wisecow Application**
+- **URL**: `https://www.checkmypro.online` (or `https://www.yourdomain.com`)
+
+**2. ArgoCD Dashboard (GitOps)**
+- **URL**: `https://argocd.checkmypro.online` (or `https://argocd.yourdomain.com`)
+- **Username**: `admin`
+- **Password**: Auto-generated on boot. Retrieve it securely via:
+  ```bash
+  kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+  ```
+
+**3. Grafana Dashboard (Prometheus Metrics)**
+- **URL**: `https://grafana.checkmypro.online` (or `https://grafana.yourdomain.com`)
+- **Credentials**: *Configured securely in the `prometheus-application.yaml` values file.*
+*(Note: Use Dashboard ID `9614` to import the official NGINX Ingress traffic metrics).*
+
 ---
 
 ## Repository Structure

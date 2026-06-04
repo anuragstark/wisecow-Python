@@ -13,7 +13,20 @@ spec:
       releaseName: prometheus
       values: |
         grafana:
-          adminPassword: prom-operator
+          adminUser: wisecow
+          adminPassword: wisecow
+          ingress:
+            enabled: true
+            ingressClassName: nginx
+            annotations:
+              cert-manager.io/cluster-issuer: "letsencrypt-prod"
+              nginx.ingress.kubernetes.io/ssl-redirect: "true"
+            hosts:
+              - grafana.checkmypro.online
+            tls:
+              - secretName: grafana-secret-tls
+                hosts:
+                  - grafana.checkmypro.online
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: monitoring
