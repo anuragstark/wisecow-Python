@@ -96,9 +96,9 @@ Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to 
 
 | Wisecow Application (with SSL) | ArgoCD GitOps Dashboard |
 |:---:|:---:|
-| <img src="images/app.png" width="500"/> | <img src="images/argocdwisecow1.png" width="500"/> |
+| <img src="Images/app.png" width="500"/> | <img src="Images/argocdwisecow1.png" width="500"/> |
 | **Grafana Observability Metrics** | **GitHub Actions CI/CD Pipeline** |
-| <img src="images/grafana1.png" width="500"/> | <img src="images/cicdbuild.png" width="500"/> |
+| <img src="Images/grafana1.png" width="500"/> | <img src="Images/cicdbuild.png" width="500"/> |
 
 ---
 
