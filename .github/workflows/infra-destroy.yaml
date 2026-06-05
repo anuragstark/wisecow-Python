@@ -30,12 +30,13 @@ jobs:
       run: |
         # If we don't delete Ingress controllers first, their AWS LoadBalancers 
         # will prevent Terraform from cleanly destroying the VPC.
-        echo "Deleting ArgoCD and Prometheus to release LoadBalancers..."
+        echo "Deleting ArgoCD, Prometheus, and NGINX to release LoadBalancers..."
         kubectl delete namespace argocd --ignore-not-found=true
         kubectl delete namespace monitoring --ignore-not-found=true
+        kubectl delete namespace ingress-nginx --ignore-not-found=true
         
         # Wait a moment for AWS to delete the ELBs
-        sleep 30
+        sleep 60
       continue-on-error: true # Ignore if they are already deleted
       
     - name: Terraform Init
