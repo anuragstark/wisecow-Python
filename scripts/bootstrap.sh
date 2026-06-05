@@ -18,6 +18,15 @@ else
   echo "[WARN] SMTP_APP_PASSWORD is not set. Email alerts will fail."
 fi
 
+echo "Injecting Grafana Admin Credentials..."
+if [ -n "$GRAFANA_ADMIN_PASSWORD" ]; then
+  kubectl create secret generic grafana-admin-credentials \
+    -n monitoring \
+    --from-literal=admin-user=wisecow \
+    --from-literal=admin-password="$GRAFANA_ADMIN_PASSWORD" \
+    --dry-run=client -o yaml | kubectl apply -f -
+fi
+
 # 1. Install ArgoCD
 echo "Installing ArgoCD..."
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -

@@ -39,8 +39,10 @@ spec:
             secrets:
               - alertmanager-smtp
         grafana:
-          adminUser: wisecow
-          adminPassword: wisecow
+          admin:
+            existingSecret: grafana-admin-credentials
+            userKey: admin-user
+            passwordKey: admin-password
           ingress:
             enabled: true
             ingressClassName: nginx

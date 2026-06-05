@@ -50,6 +50,7 @@ jobs:
     - name: Bootstrap Cluster (ArgoCD & GitOps)
       env:
         SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+        GRAFANA_ADMIN_PASSWORD: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
       run: |
         chmod +x scripts/bootstrap.sh
         ./scripts/bootstrap.sh
