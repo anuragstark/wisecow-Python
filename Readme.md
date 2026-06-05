@@ -7,7 +7,7 @@ An enterprise-grade, cloud-native DevOps portfolio project demonstrating a fully
 
 ## Architecture Overview
 
-This project deploys a containerized **Python Flask Microservice** onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
+This project deploys "Wisecow" — a containerized **Python Flask Microservice** that serves random ASCII cow fortunes — onto an **AWS Elastic Kubernetes Service (EKS)** cluster. The entire lifecycle—from infrastructure provisioning to application canary deployments—is fully automated via **GitHub Actions** and **ArgoCD**, requiring zero local execution.
 
 ### Tech Stack
 - **Application**: Python 3.11, Flask, Gunicorn (with Prometheus metrics)
@@ -39,6 +39,11 @@ On every push to the repository:
 - **Zero-Touch Deployments**: ArgoCD monitors this repository. When a new image tag is detected, it automatically syncs the cluster state.
 - **Argo Rollouts**: Replaces standard Kubernetes Deployments. Configured to route **20% of live traffic** to the new version (Canary) and pause for manual verification before 100% promotion, ensuring zero-downtime and safe releases.
 
+### 4. Automated SSL & Observability
+- **Cert-Manager & Let's Encrypt**: Automatically provisions and rotates valid SSL certificates for all domains (App, ArgoCD, Grafana) via the NGINX Ingress Controller.
+- **Kube-Prometheus-Stack**: Deep cluster metrics with Grafana dashboards.
+- **Alertmanager**: Configured to send automated email notifications if pod CPU/Memory usage spikes.
+
 ---
 
 ## Getting Started
@@ -48,6 +53,8 @@ On every push to the repository:
 - GitHub Repository Secrets configured:
   - `AWS_ACCESS_KEY_ID`
   - `AWS_SECRET_ACCESS_KEY`
+  - `SMTP_APP_PASSWORD` (For Alertmanager email notifications)
+  - `GRAFANA_ADMIN_PASSWORD` (For secure Grafana login)
 
 ### How to Deploy
 You do **not** need to run any local scripts. 
@@ -79,8 +86,19 @@ Point the following three CNAME records in your DNS provider (e.g., GoDaddy) to 
 
 **3. Grafana Dashboard (Prometheus Metrics)**
 - **URL**: `https://grafana.checkmypro.online` (or `https://grafana.yourdomain.com`)
-- **Credentials**: *Configured securely in the `prometheus-application.yaml` values file.*
+- **Username**: `wisecow`
+- **Password**: *The password you set in the `GRAFANA_ADMIN_PASSWORD` GitHub Secret.*
 *(Note: Use Dashboard ID `9614` to import the official NGINX Ingress traffic metrics).*
+
+---
+
+## 📸 Project Gallery
+
+| Wisecow Application (with SSL) | ArgoCD GitOps Dashboard |
+|:---:|:---:|
+| <img src="images/app.png" width="500"/> | <img src="images/argocdwisecow1.png" width="500"/> |
+| **Grafana Observability Metrics** | **GitHub Actions CI/CD Pipeline** |
+| <img src="images/grafana1.png" width="500"/> | <img src="images/cicdbuild.png" width="500"/> |
 
 ---
 
